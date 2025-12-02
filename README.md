@@ -2,10 +2,11 @@
 
 Una aplicación nativa de Android que proporciona acceso fluido a la versión web de ChatGPT directamente desde tu dispositivo móvil.
 
-**✅ Versión Optimizada**: v1.0 (2 de Diciembre, 2025)
+**✅ Versión Optimizada**: v1.1 (Diciembre, 2025)
 - 0 Errores de compilación
 - 0 Warnings
 - APIs modernizadas a Android 15 (API 36)
+- Corrección crítica de WebView.setDataDirectorySuffix()
 - Listo para producción
 
 > 📚 **Leer documentación**: Comienza por [QUICK_START.md](./QUICK_START.md) o [DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md)
@@ -104,7 +105,8 @@ app/
 │   ├── main/
 │   │   ├── AndroidManifest.xml
 │   │   ├── java/ia/ankherth/chatgpt/
-│   │   │   └── MainActivity.kt
+│   │   │   ├── MainActivity.kt
+│   │   │   └── ChatGPTApplication.kt
 │   │   └── res/
 │   │       ├── layout/
 │   │       │   └── activity_main.xml
@@ -141,6 +143,6 @@ Esta aplicación es un cliente no oficial de ChatGPT. No está afiliada ni respa
 
 ---
 
-**Versión Actual**: 1.0  
+**Versión Actual**: 1.1  
 **Última Actualización**: Diciembre 2025
 # Chat-GPT-WEBAPP

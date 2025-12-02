@@ -2,6 +2,35 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.1] - 2025-12-XX
+
+### Corrección Crítica
+
+#### 🐛 Correcciones de Errores
+- **Corrección de WebView.setDataDirectorySuffix()**: Resuelto el error `IllegalStateException: Can't set data directory suffix: WebView already initialized`
+  - Movida la configuración de `setDataDirectorySuffix()` desde `MainActivity` a `ChatGPTApplication`
+  - La configuración ahora se ejecuta antes de inicializar cualquier WebView
+  - Implementada verificación de proceso principal (multi-process check)
+  - Solo se configura en procesos que no sean el proceso principal
+
+#### 🔧 Mejoras Técnicas
+- **Nueva Clase Application**: Creada `ChatGPTApplication.kt` para manejar la inicialización de WebView
+  - Configuración centralizada de WebView antes de cualquier inicialización
+  - Manejo de errores mejorado con try-catch para evitar crashes
+  - Verificación de nombre de proceso para compatibilidad multi-proceso
+
+#### 📝 Cambios en el Código
+- **MainActivity.kt**: Eliminada llamada a `WebView.setDataDirectorySuffix()` del método `setupCacheAndStorage()`
+- **AndroidManifest.xml**: Agregado atributo `android:name=".ChatGPTApplication"` al tag `<application>`
+- **ChatGPTApplication.kt**: Nueva clase Application con método `getCurrentProcessName()` para verificación de procesos
+
+#### ✅ Estabilidad
+- Eliminado error de compilación relacionado con conflictos de nombres de métodos
+- Mejorada la inicialización de WebView para evitar errores en tiempo de ejecución
+- Compatibilidad mejorada con aplicaciones multi-proceso
+
+---
+
 ## [1.0] - 2025-12-02
 
 ### Lanzamiento Inicial

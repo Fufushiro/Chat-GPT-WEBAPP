@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
         // Pantalla completa
         @Suppress("DEPRECATION")
         window.decorView.systemUiVisibility = (
@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
             android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         )
         supportActionBar?.hide()
-        
+
         setContentView(R.layout.activity_main)
 
         webView = findViewById(R.id.webView)
@@ -34,10 +34,10 @@ class MainActivity : AppCompatActivity() {
 
         // Configurar cache y almacenaje
         setupCacheAndStorage()
-        
+
         // Configurar cookies
         setupCookies()
-        
+
         // Configurar WebView
         configureWebView()
 
@@ -72,6 +72,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         WebView.setWebContentsDebuggingEnabled(false)
+
+        // Nota: WebView.setDataDirectorySuffix() se llama ahora en ChatGPTApplication.onCreate()
+        // antes de inicializar cualquier WebView para evitar el error IllegalStateException
     }
 
     private fun setupCookies() {
@@ -79,6 +82,8 @@ class MainActivity : AppCompatActivity() {
         cookieManager.apply {
             setAcceptCookie(true)
             setAcceptThirdPartyCookies(webView, true)
+            // Asegurar que las cookies se guardan inmediatamente
+            flush()
         }
     }
 
@@ -87,35 +92,46 @@ class MainActivity : AppCompatActivity() {
     private fun configureWebView() {
         webView.apply {
             webViewClient = CustomWebViewClient()
-            
+
             settings.apply {
                 @Suppress("SetJavaScriptEnabled")
                 javaScriptEnabled = true
                 domStorageEnabled = true
+                databaseEnabled = true
 
-                // Configuración de cache
-                cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
-                
+                // Configuración de cache - CARGAR DESDE CACHE SI ESTÁ DISPONIBLE
+                cacheMode = WebSettings.LOAD_DEFAULT
+
                 // Almacenaje de aplicación
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     setAlgorithmicDarkeningAllowed(false)
                 }
-                
+
                 mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 useWideViewPort = true
                 loadWithOverviewMode = true
                 setSupportZoom(true)
                 builtInZoomControls = true
                 displayZoomControls = false
-                
-                // User agent
-                userAgentString = "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36"
-                
+
+                // User agent para que ChatGPT no detecte que es un WebView
+                userAgentString = "Mozilla/5.0 (Linux; Android 14; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+
                 // Mejorar rendimiento
                 setGeolocationEnabled(true)
                 mediaPlaybackRequiresUserGesture = false
                 allowFileAccess = true
                 allowContentAccess = true
+
+                // Nota: setAppCacheEnabled y setAppCachePath fueron eliminados en versiones recientes de Android
+                // El cache se maneja automáticamente con cacheMode = WebSettings.LOAD_DEFAULT
+
+                // Habilitar almacenamiento local (DOM Storage)
+                // Nota: setDatabasePath también fue deprecado, pero se mantiene para compatibilidad con versiones antiguas
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                    @Suppress("DEPRECATION")
+                    setDatabasePath(filesDir.absolutePath + "/webview_db")
+                }
             }
         }
     }
@@ -123,7 +139,10 @@ class MainActivity : AppCompatActivity() {
     private inner class CustomWebViewClient : WebViewClient() {
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
-            
+
+            // Guardar cookies después de que carga la página
+            cookieManager.flush()
+
             // Inyectar script para mantener la sesión
             view?.evaluateJavascript(
                 """
@@ -144,7 +163,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onPause() {
         super.onPause()
         // Guardar cookies cuando se pausa la aplicación
@@ -158,8 +176,9 @@ class MainActivity : AppCompatActivity() {
         // Restaurar sesión cuando se reanuda
         webView.onResume()
         webView.resumeTimers()
-        
-        // Recargar si es necesario pero sin perder sesión
+
+        // NO recargar automáticamente para mantener sesión intacta
+        // Solo cargar si es la primera vez (webView.url es null)
         if (webView.url == null) {
             val url = getChatGPTUrl()
             webView.loadUrl(url)
@@ -173,3 +192,4 @@ class MainActivity : AppCompatActivity() {
         webView.destroy()
     }
 }
+
