@@ -4,33 +4,63 @@ Todos los cambios notables en este proyecto serán documentados en este archivo.
 
 ## [1.2] - 2025-12-XX
 
-### Mejora de Experiencia de Usuario
+### Modernización de APIs y Mejora de Fullscreen
 
 #### ✨ Nuevas Características
-- **Ajuste Automático del Teclado**: Implementado `android:windowSoftInputMode="adjustResize"` en AndroidManifest.xml
-  - El WebView se redimensiona automáticamente cuando aparece el teclado
-  - La interfaz se ajusta para que el contenido no quede oculto
-  - Mejora significativa en la experiencia de escritura
+- **Fullscreen Moderno con WindowInsetsControllerCompat**: Reemplazado el sistema deprecated `systemUiVisibility` por APIs modernas de Android
+  - Implementado `WindowCompat` y `WindowInsetsControllerCompat` para control de fullscreen
+  - Configurado `BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE` para permitir mostrar barras con swipe
+  - Fullscreen permanente sin salir del modo cuando aparece el teclado
+  - Sin parpadeos ni cambios visuales bruscos
+
+- **Ajuste Automático del Teclado con WindowInsetsCompat**: Sistema moderno de manejo de insets del IME
+  - Implementado `ViewCompat.setOnApplyWindowInsetsListener()` para detectar el teclado
+  - Uso de `WindowInsetsCompat.Type.ime()` para detectar insets del teclado
+  - Ajuste dinámico del padding del layout cuando aparece/desaparece el teclado
+  - El campo de texto nunca queda oculto por el teclado
+  - Transiciones suaves sin interrupciones visuales
 
 #### 🔧 Mejoras Técnicas
-- **Corrección de Elementos Fixed**: Script JavaScript mejorado que corrige elementos con `position: fixed`
-  - Detecta y convierte elementos fixed en la parte inferior a `position: sticky`
-  - Asegura que la barra de escritura siempre sea visible cuando aparece el teclado
-  - Observador de mutaciones del DOM para aplicar correcciones dinámicamente
-  - Compatible con la estructura de elementos de ChatGPT
+- **APIs Modernas de Android**: Migración completa a androidx.core
+  - `WindowCompat.setDecorFitsSystemWindows()` para control de insets
+  - `WindowInsetsControllerCompat` para gestión de barras del sistema
+  - `ViewCompat.setOnApplyWindowInsetsListener()` para manejo de insets del IME
+  - Compatible con Android 10+ (API 29+)
+  - Preparado para futuras versiones de Android
+
+- **Eliminación de Código Deprecated**: Removido código obsoleto
+  - Eliminado `systemUiVisibility` (deprecated desde API 30)
+  - Removido `android:windowSoftInputMode` del AndroidManifest (reemplazado por insets)
+  - Código más limpio y mantenible
 
 #### 📝 Cambios en el Código
-- **AndroidManifest.xml**: Agregado atributo `android:windowSoftInputMode="adjustResize"` a la actividad MainActivity
-- **MainActivity.kt**: Mejorado el script JavaScript inyectado en `onPageFinished()`
-  - Mantiene toda la funcionalidad de sesión existente
-  - Agrega función `fixFixedElements()` para corrección de elementos fixed
-  - Implementa `MutationObserver` para correcciones dinámicas en tiempo real
+- **MainActivity.kt**: 
+  - Reemplazado `systemUiVisibility` por `WindowCompat` y `WindowInsetsControllerCompat`
+  - Implementado `ViewCompat.setOnApplyWindowInsetsListener()` en el root layout
+  - Manejo dinámico de padding basado en insets del IME y system bars
+  - Agregados imports: `androidx.core.view.ViewCompat`, `WindowCompat`, `WindowInsetsCompat`, `WindowInsetsControllerCompat`
+
+- **activity_main.xml**: 
+  - Agregado `android:id="@+id/rootLayout"` al LinearLayout principal
+  - Agregado `android:fitsSystemWindows="false"` para control manual de insets
+
+- **AndroidManifest.xml**: 
+  - Removido `android:windowSoftInputMode="adjustResize"` (ya no necesario con insets modernos)
 
 #### ✅ Experiencia de Usuario
-- La barra de escritura de ChatGPT ya no queda tapada por el teclado
-- Redimensionamiento suave y automático del contenido
-- Mejor accesibilidad al escribir mensajes largos
-- Compatibilidad mejorada con diferentes tamaños de pantalla
+- Fullscreen permanente sin interrupciones
+- El teclado empuja el contenido hacia arriba automáticamente
+- Sin parpadeos ni cambios visuales bruscos
+- Transiciones suaves al mostrar/ocultar el teclado
+- Mejor experiencia en dispositivos con diferentes tamaños de pantalla
+- Compatible con gestos de navegación modernos de Android
+
+#### 🎯 Beneficios Técnicos
+- Código más moderno y mantenible
+- Mejor rendimiento con APIs optimizadas
+- Preparado para futuras actualizaciones de Android
+- Sin warnings de deprecación
+- Compatible con Android 10+ (API 29+)
 
 ---
 

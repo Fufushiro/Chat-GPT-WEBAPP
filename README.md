@@ -6,8 +6,9 @@ Una aplicación nativa de Android que proporciona acceso fluido a la versión we
 - 0 Errores de compilación
 - 0 Warnings
 - APIs modernizadas a Android 15 (API 36)
-- Corrección crítica de WebView.setDataDirectorySuffix()
-- Ajuste automático del teclado para mejor experiencia de escritura
+- Fullscreen moderno con WindowInsetsControllerCompat
+- Ajuste automático del teclado con WindowInsetsCompat
+- Sin código deprecated
 - Listo para producción
 
 > 📚 **Leer documentación**: Comienza por [QUICK_START.md](./QUICK_START.md) o [DOCUMENTATION_INDEX.md](./DOCUMENTATION_INDEX.md)
@@ -39,9 +40,11 @@ Una aplicación nativa de Android que proporciona acceso fluido a la versión we
 - **Optimización Android**: Configurado para Android 14+
 
 ### ⌨️ Experiencia de Escritura
-- **Ajuste Automático del Teclado**: El WebView se redimensiona automáticamente cuando aparece el teclado
-- **Barra de Escritura Visible**: La barra de input nunca queda tapada por el teclado
-- **Corrección de Elementos Fixed**: Scripts JavaScript que corrigen elementos con position:fixed para mejor compatibilidad
+- **Ajuste Automático del Teclado con WindowInsetsCompat**: Sistema moderno que detecta el teclado usando `WindowInsetsCompat.Type.ime()`
+- **Barra de Escritura Siempre Visible**: El layout se ajusta dinámicamente con padding cuando aparece el teclado
+- **Fullscreen Permanente**: No sale del modo fullscreen cuando aparece el teclado
+- **Sin Parpadeos**: Transiciones suaves sin interrupciones visuales
+- **APIs Modernas**: Usa `ViewCompat.setOnApplyWindowInsetsListener()` para manejo de insets
 
 ## 📱 Requisitos
 
@@ -100,9 +103,11 @@ cd ChatGPT\ WebAPP
 
 ### Stack Tecnológico
 - **Lenguaje**: Kotlin
-- **Target SDK**: Android 14 (API 34)
+- **Target SDK**: Android 15 (API 36)
+- **Min SDK**: Android 12 (API 31)
 - **Compilación**: Gradle 8.x
 - **WebView**: Chrome WebView (Android nativo)
+- **APIs Modernas**: WindowInsetsCompat, WindowInsetsControllerCompat, ViewCompat (androidx.core)
 
 ### Estructura del Proyecto
 ```
@@ -150,5 +155,6 @@ Esta aplicación es un cliente no oficial de ChatGPT. No está afiliada ni respa
 ---
 
 **Versión Actual**: 1.2  
-**Última Actualización**: Diciembre 2025
+**Última Actualización**: Diciembre 2025  
+**Cambios en v1.2**: Fullscreen moderno con WindowInsetsControllerCompat, ajuste automático del teclado con WindowInsetsCompat, eliminación de código deprecated
 # Chat-GPT-WEBAPP

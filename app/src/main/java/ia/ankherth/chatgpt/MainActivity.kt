@@ -2,12 +2,17 @@ package ia.ankherth.chatgpt
 
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.webkit.CookieManager
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
@@ -18,18 +23,40 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Pantalla completa
-        @Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility = (
-            android.view.View.SYSTEM_UI_FLAG_FULLSCREEN or
-            android.view.View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-            android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        )
+        // Configurar fullscreen usando APIs modernas
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+        windowInsetsController?.let { controller ->
+            // Ocultar barras del sistema permanentemente
+            controller.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+            // Permitir mostrar barras con swipe (BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE)
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
         supportActionBar?.hide()
 
         setContentView(R.layout.activity_main)
 
         webView = findViewById(R.id.webView)
+        
+        // Configurar manejo de insets del IME para ajustar el layout cuando aparece el teclado
+        // Aplicar insets al root view del layout (LinearLayout)
+        val rootLayout = findViewById<View>(R.id.rootLayout)
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, windowInsets ->
+            val imeInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime())
+            val systemBarsInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            
+            // Ajustar padding del root view para que el contenido no quede oculto por el teclado
+            view.setPadding(
+                systemBarsInsets.left,
+                systemBarsInsets.top,
+                systemBarsInsets.right,
+                // El padding inferior será la altura del IME cuando esté visible
+                imeInsets.bottom
+            )
+            
+            // Retornar los insets consumidos
+            WindowInsetsCompat.CONSUMED
+        }
         cookieManager = CookieManager.getInstance()
 
         // Configurar cache y almacenaje
