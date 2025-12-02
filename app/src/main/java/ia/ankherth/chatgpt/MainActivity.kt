@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
             // Guardar cookies después de que carga la página
             cookieManager.flush()
 
-            // Inyectar script para mantener la sesión
+            // Inyectar script para mantener la sesión y corregir problemas con el teclado
             view?.evaluateJavascript(
                 """
                 (function() {
@@ -156,6 +156,51 @@ class MainActivity : AppCompatActivity() {
                         window._sessionKeepAliveInterval = setInterval(function() {
                             localStorage.setItem('_session_keep_alive', new Date().getTime());
                         }, 300000); // Cada 5 minutos
+                    }
+                    
+                    // Corregir elementos con position: fixed que pueden causar problemas con el teclado
+                    function fixFixedElements() {
+                        // Buscar elementos con position: fixed que puedan estar tapando el input
+                        var fixedElements = document.querySelectorAll('[style*="position: fixed"], [style*="position:fixed"]');
+                        fixedElements.forEach(function(el) {
+                            var style = window.getComputedStyle(el);
+                            if (style.position === 'fixed' && (style.bottom === '0px' || parseFloat(style.bottom) === 0)) {
+                                // Convertir elementos fixed en la parte inferior a sticky
+                                el.style.position = 'sticky';
+                                el.style.bottom = '0';
+                            }
+                        });
+                        
+                        // También buscar por clases comunes de ChatGPT
+                        var chatInputs = document.querySelectorAll('textarea, input[type="text"]');
+                        chatInputs.forEach(function(input) {
+                            var parent = input.closest('[style*="position: fixed"], [style*="position:fixed"]');
+                            if (parent) {
+                                var parentStyle = window.getComputedStyle(parent);
+                                if (parentStyle.position === 'fixed') {
+                                    parent.style.position = 'sticky';
+                                }
+                            }
+                        });
+                    }
+                    
+                    // Ejecutar inmediatamente
+                    fixFixedElements();
+                    
+                    // Ejecutar después de un pequeño delay para asegurar que el DOM esté completamente cargado
+                    setTimeout(fixFixedElements, 500);
+                    
+                    // Observar cambios en el DOM para aplicar correcciones dinámicamente
+                    if (window.MutationObserver) {
+                        var observer = new MutationObserver(function(mutations) {
+                            fixFixedElements();
+                        });
+                        observer.observe(document.body, {
+                            childList: true,
+                            subtree: true,
+                            attributes: true,
+                            attributeFilter: ['style', 'class']
+                        });
                     }
                 })();
                 """.trimIndent()

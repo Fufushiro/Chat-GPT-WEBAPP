@@ -2,6 +2,38 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.2] - 2025-12-XX
+
+### Mejora de Experiencia de Usuario
+
+#### ✨ Nuevas Características
+- **Ajuste Automático del Teclado**: Implementado `android:windowSoftInputMode="adjustResize"` en AndroidManifest.xml
+  - El WebView se redimensiona automáticamente cuando aparece el teclado
+  - La interfaz se ajusta para que el contenido no quede oculto
+  - Mejora significativa en la experiencia de escritura
+
+#### 🔧 Mejoras Técnicas
+- **Corrección de Elementos Fixed**: Script JavaScript mejorado que corrige elementos con `position: fixed`
+  - Detecta y convierte elementos fixed en la parte inferior a `position: sticky`
+  - Asegura que la barra de escritura siempre sea visible cuando aparece el teclado
+  - Observador de mutaciones del DOM para aplicar correcciones dinámicamente
+  - Compatible con la estructura de elementos de ChatGPT
+
+#### 📝 Cambios en el Código
+- **AndroidManifest.xml**: Agregado atributo `android:windowSoftInputMode="adjustResize"` a la actividad MainActivity
+- **MainActivity.kt**: Mejorado el script JavaScript inyectado en `onPageFinished()`
+  - Mantiene toda la funcionalidad de sesión existente
+  - Agrega función `fixFixedElements()` para corrección de elementos fixed
+  - Implementa `MutationObserver` para correcciones dinámicas en tiempo real
+
+#### ✅ Experiencia de Usuario
+- La barra de escritura de ChatGPT ya no queda tapada por el teclado
+- Redimensionamiento suave y automático del contenido
+- Mejor accesibilidad al escribir mensajes largos
+- Compatibilidad mejorada con diferentes tamaños de pantalla
+
+---
+
 ## [1.1] - 2025-12-XX
 
 ### Corrección Crítica
