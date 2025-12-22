@@ -2,6 +2,81 @@
 
 Todos los cambios notables en este proyecto serán documentados en este archivo.
 
+## [1.3] - 2025-12-22
+
+### Implementación de Subida de Archivos desde Almacenamiento del Dispositivo
+
+#### ✨ Nuevas Características
+- **Selector de Archivos Integrado**: Acceso completo al almacenamiento del dispositivo para adjuntar archivos en ChatGPT
+  - Selector de archivos nativo del sistema usando `ACTION_GET_CONTENT` y `ACTION_OPEN_DOCUMENT`
+  - Soporte para seleccionar: imágenes, documentos y archivos en general (*/*)
+  - Interfaz intuitiva usando diálogos del sistema operativo
+
+- **WebChromeClient Personalizado**: Gestión moderna de eventos del WebView
+  - Implementado `CustomWebChromeClient` para manejar `onShowFileChooser()`
+  - Compatible con API moderna `ActivityResultLauncher`
+  - Devolución correcta del Uri seleccionado al WebView mediante `ValueCallback<Array<Uri>>`
+
+- **Acceso a Almacenamiento Seguro**: Configuración segura del WebView
+  - Habilitado `allowFileAccess = true` para acceso a archivos locales
+  - Habilitado `allowContentAccess = true` para acceso a content providers
+  - Uso de permisos modernos sin `WRITE_EXTERNAL_STORAGE` innecesarios
+  - Compatible con Android 10+ (scoped storage)
+
+#### 🔧 Mejoras Técnicas
+- **APIs Modernas de Android**: Migración a `ActivityResultLauncher`
+  - Uso de `registerForActivityResult()` en lugar de deprecated `onActivityResult()`
+  - Soporte para `GetContent` contract para selección de archivos
+  - Manejo automático de resultados con lambda functions
+  - Mejor rendimiento y mantenibilidad
+
+- **Gestión de Permisos Moderna**: Permisos adaptados a versiones recientes
+  - `android.permission.READ_MEDIA_IMAGES` para acceso a imágenes (API 33+)
+  - `android.permission.READ_MEDIA_AUDIO` para acceso a audio (API 33+)
+  - `android.permission.READ_MEDIA_VIDEO` para acceso a videos (API 33+)
+  - Fallback a `READ_EXTERNAL_STORAGE` para Android 12 e inferiores
+  - Eliminado `WRITE_EXTERNAL_STORAGE` (no requerido para lectura)
+
+#### 📝 Cambios en el Código
+- **MainActivity.kt**: 
+  - Agregado `ActivityResultLauncher` para selección de archivos
+  - Integración de `CustomWebChromeClient` en la configuración del WebView
+  - Manejo automático de resultados del selector de archivos
+  - Validación de URIs antes de pasar al WebView
+
+- **CustomWebChromeClient.kt**: Nueva clase especializada
+  - Implementación de `onShowFileChooser()` para manejar eventos de input file
+  - Creación de intent para `ACTION_GET_CONTENT` con tipos MIME
+  - Callback automático de resultados seleccionados
+  - Manejo de errores y cancelaciones del usuario
+
+- **AndroidManifest.xml**: 
+  - Agregados permisos modernos `READ_MEDIA_IMAGES`, `READ_MEDIA_AUDIO`, `READ_MEDIA_VIDEO`
+  - Fallback a `READ_EXTERNAL_STORAGE` con `maxSdkVersion="32"`
+  - Agregada declaración `<queries>` para content providers (Android 11+)
+
+#### ✅ Experiencia de Usuario
+- Adjuntar archivos directamente desde ChatGPT en la app
+- Selector de archivos nativo y familiar para usuarios Android
+- Sin popups emergentes o instalación de apps externas
+- Soporte para múltiples tipos de archivo
+- Cancela automáticamente si el usuario no selecciona nada
+
+#### 🎯 Beneficios Técnicos
+- Implementación moderna usando ActivityResultLauncher
+- Permisos granulares y seguridad mejorada
+- Compatible con Android 10+ (scoped storage)
+- No impacta en funcionalidades existentes (cookies, sesión, fullscreen, cache)
+- Código modular y reutilizable
+
+#### 🔒 Seguridad y Privacidad
+- Acceso restringido solo a archivos seleccionados por el usuario
+- No se guardan rutas de archivos sin permiso
+- Compatibilidad con scoped storage de Android
+- Permisos solicitados solo cuando se intenta adjuntar archivo
+
+---
+
 ## [1.2] - 2025-12-XX
 
 ### Modernización de APIs y Mejora de Fullscreen

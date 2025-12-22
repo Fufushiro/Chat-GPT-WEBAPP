@@ -6,8 +6,25 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Permisos modernos para acceso a archivos (Android 13+) -->
+    <!-- READ_MEDIA_IMAGES: Acceso a imágenes -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- READ_MEDIA_VIDEO: Acceso a videos -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!-- READ_MEDIA_VISUAL_USER_SELECTED: Para el nuevo Photo Picker en Android 14+ (opcional, para mejor UX) -->
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+        tools:ignore="ScopedStorage" />
+
+    <!-- Permisos legacy para compatibilidad con Android 12 y anteriores -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" />
 
     <application
         android:name=".ChatGPTApplication"
